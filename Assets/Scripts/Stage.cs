@@ -10,10 +10,11 @@ public class Stage : MonoBehaviour
     public float speed = 4f;
     private Vector3 initialPosition;
     public Transform player;
-    public Vector2 boxSize;
-    public GameObject gameover;
-    [SerializeField] private Transform boxpos;
     [SerializeField] private GameObject RockPrefab;
+    public GameObject gameoverscreen;
+ 
+    //public GameObject gameOverScreen; // Reference to the game over screen object
+    //public AudioSource collisionSound; // Reference to the audio source for collision sound
 
 
     private void Start()
@@ -45,15 +46,6 @@ public class Stage : MonoBehaviour
         }
     }
 
-    public void BoxObj(GameObject rock)
-    {
-    Collider2D rockCollider = rock.AddComponent<BoxCollider2D>(); // Add a BoxCollider2D component to the rock
-    rockCollider.isTrigger = true; // Set the collider to be a trigger
-
-    // Perform actions based on collisions
-    rockCollider.gameObject.tag = "Rock"; // Assign a tag to identify the rocks
-    Debug.Log("damag");
-    }
 
 
     private void ResetStagePosition(GameObject stage)
@@ -72,7 +64,7 @@ public class Stage : MonoBehaviour
             {
                 Vector3 spawnPosition = new Vector3(Random.Range(15, 30), -6.89f, 0);
                 GameObject rockInstance = Instantiate(RockPrefab, spawnPosition, Quaternion.identity);
-                BoxObj(rockInstance);
+  
                 StartCoroutine(MoveRock(rockInstance));
                 
             yield return new WaitForSeconds(5f); // 
@@ -82,12 +74,22 @@ public class Stage : MonoBehaviour
     IEnumerator MoveRock(GameObject rock)
     {
     while (true)
-    {
+        {
         
         rock.transform.Translate(Vector3.left * speed * Time.deltaTime);
         yield return null;
-    }   
+
+            if (RockCollisionHandler.gameover == true)
+            {
+                gameoverscreen.SetActive(true);
+
+                Time.timeScale = 0f;
+            }
+        }   
     }
+   
+
+     
 
 
 }
